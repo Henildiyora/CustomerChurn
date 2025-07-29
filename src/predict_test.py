@@ -17,13 +17,13 @@ predictor = Predictor(
 )
 
 # Test prediction
-sample = test_features[0].tolist()  # Take one sample
+sample = test_features[0].tolist() 
 prediction = predictor.predict(sample)
 print(f"Prediction: {prediction}")
 
 # Evaluate multiple samples
 predictions = []
-for row in test_features[:10]:  # Test first 10 samples
+for row in test_features[:10]:  
     pred = predictor.predict(row.tolist())
     predictions.append(pred)
 print(f"First 10 predictions: {predictions}")
