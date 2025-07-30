@@ -1,18 +1,20 @@
 # Customer Churn Prediction Pipeline
 
-This project builds a machine learning model to predict telecom customer churn using AWS SageMaker and XGBoost. It includes data preprocessing, model training on AWS, deployment of a real-time inference endpoint, and analysis of feature importance for insights into customer attrition.
+This project builds a machine learning model to predict telecom customer churn using AWS SageMaker and XGBoost. It includes data preprocessing, model training, deployment, and testing, orchestrated via `main.py`.
 
 ## Dataset
 - **Name**: Telco Customer Churn (IBM sample dataset)
-- **Description**: Contains information about ~7,000 customers (demographics, account info, services) and whether they churned.
+- **Description**: Contains ~7,000 customers' data (demographics, account info, services) and churn status.
 - **Source**: [Kaggle: Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
-- The raw dataset is in `data/telco_churn.csv`. No sensitive PII; data is fictional.
+- Located in `data/telco_churn.csv`. No sensitive PII; data is fictional.
 
 ## Project Structure
 - `data/`: Dataset and processed train/validation/test CSVs.
-- `src/`: Scripts for preprocessing, training, deployment, and inference.
 - `notebooks/`: Jupyter notebook for feature importance analysis.
 - `model/`: Feature importance plot and optional model artifacts.
+- `src/`: Scripts for preprocessing, training, deployment, and testing.
+- `main.py`: Orchestrates the pipeline.
+- `.env.example`: Template for environment variables.
 - `requirements.txt`: Python dependencies.
 - `README.md`: Project documentation.
 
@@ -25,40 +27,25 @@ This project builds a machine learning model to predict telecom customer churn u
    ```
    Note: Developed on macOS M1; dependencies are compatible with Apple Silicon.
 2. **AWS Credentials**:
-   - Configure AWS CLI: `aws configure`
+   - Copy `.env.example` to `.env` and fill in `S3_BUCKET`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+   - Alternatively, configure AWS CLI: `aws configure`.
    - Create a SageMaker execution role with `AmazonSageMakerFullAccess` and `AmazonS3FullAccess`.
-3. **Data Preparation**:
+3. **Run Pipeline**:
    ```bash
-   python src/preprocess.py
+   python main.py --bucket your-bucket-name
    ```
-   Outputs `train.csv`, `validation.csv`, `test.csv` in `data/processed/` and uploads to S3.
-4. **Model Training**:
-   ```bash
-   python src/train_sagemaker.py
-   ```
-   Launches a SageMaker training job using XGBoost.
-5. **Deploy Model**:
-   ```bash
-   python src/deploy.py
-   ```
-   Deploys the model to a SageMaker endpoint. Record the endpoint name.
-6. **Test Inference**:
-   ```bash
-   python src/predict_test.py --endpoint your-endpoint-name
-   ```
-   Sends sample data to the endpoint and prints predictions.
-7. **Feature Importance**:
-   - Run `notebooks/Churn_Prediction_Pipeline.ipynb` to generate a feature importance plot.
-8. **Cleanup**:
-   - Delete the endpoint: `predictor.delete_endpoint()`
-   - Stop any running SageMaker notebook instances.
+   This runs preprocessing, training, deployment, and testing. Optionally, specify `--training-job-name` or `--endpoint-name` to skip earlier steps.
+4. **Feature Importance**:
+   - Run `notebooks/Churn_Prediction_Pipeline.ipynb` to analyze feature importance.
+5. **Cleanup**:
+   - Manually delete the endpoint in AWS Console (SageMaker > Endpoints) to avoid charges.
    - Monitor AWS Billing to stay within free tier limits.
 
 ## AWS Free Tier Usage
 - Uses `ml.t2.medium` for training (250 hours/month free) and hosting (750 hours for 2 months).
 - S3: 5GB free storage.
-- Delete endpoints and stop instances to avoid charges.
+- Delete endpoints to avoid charges.
 
 ## Results
-- The model predicts churn probability for telecom customers.
-- Feature importance analysis highlights key drivers like tenure and contract type.
+- Predicts churn probability for telecom customers.
+- Feature importance highlights key drivers like tenure and contract type.
